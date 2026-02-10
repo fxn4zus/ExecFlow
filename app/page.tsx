@@ -103,7 +103,7 @@ export default function Home() {
           onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
           onInit={setReactFlowInstance}
-          onDrop={onDrop} // ✅ CORRECT
+          onDrop={onDrop}
           onDragOver={onDragOver}
           className="bg-gray-100 dark:bg-gray-900"
         >
