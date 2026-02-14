@@ -1,7 +1,9 @@
 "use client";
 
-import CustomNode from "@/component/CustomNode";
-import SideBar from "@/component/Sidebar";
+import CustomNode from "@/components/CustomNode";
+import NodeConfigPanel from "@/components/NodeConfigPanel";
+import NodeConfig from "@/components/NodeConfigPanel";
+import SideBar from "@/components/Sidebar";
 import { nodeDefinitions } from "@/lib/node-definitions";
 import { useWorkFlowStore } from "@/lib/store";
 import { NodeData, WorkFlowNode } from "@/lib/types";
@@ -19,6 +21,7 @@ import ReactFlow, {
   Connection,
   OnEdgesChange,
 } from "reactflow";
+import {WorkFlowExecutor} from "@/lib/executor"
 import "reactflow/dist/style.css";
 
 //each node has a unique ID
@@ -126,7 +129,7 @@ export default function Home() {
     (connection: Connection) => {
       const edge = {
         ...connection,
-        id: `${connection.source}-${connection.target}`, 
+        id: `${connection.source}-${connection.target}`,
         type: "smoothstep",
         animated: true,
       };
@@ -143,18 +146,27 @@ export default function Home() {
     [],
   );
 
+  const executeWorkFlow=async()=>{
+    if(nodes.length===0){
+      alert("Add some nodes to the workflow")
+      return 
+    }
+
+    setIsExecuting(true)
+    const executor=new WorkFlowExecutor()
+  }
+
   return (
     <div className="flex h-screen w-screen bg-gray-100 dark:bg-gray-950">
       <SideBar /> {/* Sidebar with draggable nodes */}
-
       <div className="flex-1" ref={reactFlowWrapper}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={handleNodesChange} 
-          onEdgesChange={handleEdgesChange} 
+          onNodesChange={handleNodesChange}
+          onEdgesChange={handleEdgesChange}
           onInit={setReactFlowInstance} // store instance for drop calculations
-          onDrop={onDrop} 
+          onDrop={onDrop}
           nodeTypes={nodeType} // custom node rendering
           onDragOver={onDragOver} // allow dropping
           className="bg-gray-100 dark:bg-gray-900"
@@ -189,6 +201,12 @@ export default function Home() {
           </Panel>
         </ReactFlow>
       </div>
+      {selectedNodeId && (
+        <NodeConfigPanel
+          nodeId={selectedNodeId}
+          onClose={() => setSelectedNodeId(null)}
+        />
+      )}
     </div>
   );
 }
